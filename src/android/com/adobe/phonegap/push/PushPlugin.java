@@ -58,7 +58,9 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
 
                         Log.v(LOG_TAG, "execute: senderID=" + senderID);
 
-                        GCMRegistrar.register(getApplicationContext(), senderID);
+                        if(senderID != "") {
+                            GCMRegistrar.register(getApplicationContext(), senderID);
+                        }
                     } catch (JSONException e) {
                         Log.e(LOG_TAG, "execute: Got JSON Exception " + e.getMessage());
                         callbackContext.error(e.getMessage());
