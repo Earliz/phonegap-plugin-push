@@ -365,6 +365,22 @@ public class GCMIntentService extends GCMBaseIntentService implements PushConsta
         if (message == null) {
             message = extras.getString(GCM_NOTIFICATION+"."+key);
         }
+        if (message == null) {
+            // Look in data object
+            Object json = extras.get("data");
+            // Make sure data is json object stringified
+            if ( json instanceof String && ((String) json).startsWith("{") ) {
+                try {
+                    // Parse it
+                    JSONObject data = new JSONObject((String) json);
+                    if (!data.isNull(key)) {
+                        return data.getString(key);
+                    }
+                } catch( JSONException e) {
+                    Log.e(LOG_TAG, "extrasToJSON: JSON exception");
+                }
+            }
+        }
         return message;
     }
 
@@ -372,6 +388,24 @@ public class GCMIntentService extends GCMBaseIntentService implements PushConsta
         String message = extras.getString(key);
         if (message == null) {
             message = extras.getString(GCM_NOTIFICATION+"."+key, defaultString);
+        }
+        if (message == defaultString) {
+            // Look in data object
+            Object json = extras.get("data");
+            // Make sure data is json object stringified
+            if ( json instanceof String && ((String) json).startsWith("{") ) {
+                try {
+                    // Parse it
+                    JSONObject data = new JSONObject((String) json);
+                    if (!data.isNull(key)) {
+                        return data.getString(key);
+                    } else {
+                        return message;
+                    }
+                } catch( JSONException e) {
+                    Log.e(LOG_TAG, "extrasToJSON: JSON exception");
+                }
+            }
         }
         return message;
     }
